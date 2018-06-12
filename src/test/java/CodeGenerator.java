@@ -11,16 +11,16 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.company.project.core.ProjectConstant.*;
+import static com.eservice.api.core.ProjectConstant.*;
 
 /**
  * 代码生成器，根据数据表名称生成对应的Model、Mapper、Service、Controller简化开发。
  */
 public class CodeGenerator {
     //JDBC配置，请修改为你项目的实际配置
-    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/test";
+    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/sinsim_db";
     private static final String JDBC_USERNAME = "root";
-    private static final String JDBC_PASSWORD = "123456";
+    private static final String JDBC_PASSWORD = "hello123!";
     private static final String JDBC_DIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
 
     private static final String PROJECT_PATH = System.getProperty("user.dir");//项目在硬盘上的基础路径
@@ -33,11 +33,22 @@ public class CodeGenerator {
     private static final String PACKAGE_PATH_SERVICE_IMPL = packageConvertPath(SERVICE_IMPL_PACKAGE);//生成的Service实现存放路径
     private static final String PACKAGE_PATH_CONTROLLER = packageConvertPath(CONTROLLER_PACKAGE);//生成的Controller存放路径
 
-    private static final String AUTHOR = "CodeGenerator";//@author
+    private static final String AUTHOR = "Wilson Hu";//@author
     private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());//@date
+    //数据库的Tables需要在这里添加，自动生成Springboot的整套逻辑（基本增删改查）
+//    private static String[] TABLES = {"abnormal","abnormal_image","abnormal_record","device", "install_group","machine","machine_type","machine_order",
+//            "order_cancel_record","order_change_record","order_detail", "order_loading_list","order_sign","order_split_record","process",
+//            "process_record", "role", "task", "task_plan","task_record","task_quality_record", "user"};
 
+    private static String[] TABLES = { "user"};
     public static void main(String[] args) {
-        genCode("输入表名");
+//  在开发前期使用，可以使用TABLES的方式，后期可能会误操作导致自定义部分代码被flash掉
+        for (int i = 0; i < TABLES.length; i++) {
+            if(TABLES[i] != null && !"".equals(TABLES[i])) {
+                genCode(TABLES[i]);
+            }
+        }
+//        genCode("group");
         //genCodeByCustomModelName("输入表名","输入自定义Model名称");
     }
 
@@ -59,9 +70,20 @@ public class CodeGenerator {
      * @param modelName 自定义的 Model 名称
      */
     public static void genCodeByCustomModelName(String tableName, String modelName) {
-        genModelAndMapper(tableName, modelName);
-        genService(tableName, modelName);
-        genController(tableName, modelName);
+
+        String modelNameUpperCamel = tableNameConvertUpperCamel(tableName);
+        File file = new File(PROJECT_PATH + JAVA_PATH + PACKAGE_PATH_SERVICE + modelNameUpperCamel + "Service.java");
+        if (modelNameUpperCamel != null && !modelNameUpperCamel.equals("") && !file.exists()) {
+            genModelAndMapper(tableName, modelName);
+            genService(tableName, modelName);
+            genController(tableName, modelName);
+        } else {
+            if(modelNameUpperCamel == null || modelNameUpperCamel.equals("")){
+                System.out.println("表名无效!");
+            } else {
+                System.out.println(tableName + "表相关文件已存在！");
+            }
+        }
     }
 
 
@@ -82,11 +104,12 @@ public class CodeGenerator {
         PluginConfiguration pluginConfiguration = new PluginConfiguration();
         pluginConfiguration.setConfigurationType("tk.mybatis.mapper.generator.MapperPlugin");
         pluginConfiguration.addProperty("mappers", MAPPER_INTERFACE_REFERENCE);
+//        pluginConfiguration.setConfigurationType("org.mybatis.generator.plugins.SerializablePlugin");
         context.addPluginConfiguration(pluginConfiguration);
 
         JavaModelGeneratorConfiguration javaModelGeneratorConfiguration = new JavaModelGeneratorConfiguration();
         javaModelGeneratorConfiguration.setTargetProject(PROJECT_PATH + JAVA_PATH);
-        javaModelGeneratorConfiguration.setTargetPackage(MODEL_PACKAGE);
+        javaModelGeneratorConfiguration.setTargetPackage(MODEL_PACKAGE + "." + tableName);
         context.setJavaModelGeneratorConfiguration(javaModelGeneratorConfiguration);
 
         SqlMapGeneratorConfiguration sqlMapGeneratorConfiguration = new SqlMapGeneratorConfiguration();
@@ -142,6 +165,7 @@ public class CodeGenerator {
             data.put("modelNameUpperCamel", modelNameUpperCamel);
             data.put("modelNameLowerCamel", tableNameConvertLowerCamel(tableName));
             data.put("basePackage", BASE_PACKAGE);
+            data.put("tableName", tableName);
 
             File file = new File(PROJECT_PATH + JAVA_PATH + PACKAGE_PATH_SERVICE + modelNameUpperCamel + "Service.java");
             if (!file.getParentFile().exists()) {
@@ -175,6 +199,7 @@ public class CodeGenerator {
             data.put("modelNameUpperCamel", modelNameUpperCamel);
             data.put("modelNameLowerCamel", CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, modelNameUpperCamel));
             data.put("basePackage", BASE_PACKAGE);
+            data.put("tableName", tableName);
 
             File file = new File(PROJECT_PATH + JAVA_PATH + PACKAGE_PATH_CONTROLLER + modelNameUpperCamel + "Controller.java");
             if (!file.getParentFile().exists()) {

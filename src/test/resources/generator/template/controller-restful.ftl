@@ -2,7 +2,7 @@ package ${basePackage}.web;
 
 import ${basePackage}.core.Result;
 import ${basePackage}.core.ResultGenerator;
-import ${basePackage}.model.${modelNameUpperCamel};
+import ${basePackage}.model.${tableName}.${modelNameUpperCamel};
 import ${basePackage}.service.${modelNameUpperCamel}Service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -12,7 +12,9 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
-* Created by ${author} on ${date}.
+* Class Description: xxx
+* @author ${author}
+* @date ${date}.
 */
 @RestController
 @RequestMapping("${baseRequestMapping}")

@@ -1,7 +1,7 @@
 package ${basePackage}.service.impl;
 
 import ${basePackage}.dao.${modelNameUpperCamel}Mapper;
-import ${basePackage}.model.${modelNameUpperCamel};
+import ${basePackage}.model.${tableName}.${modelNameUpperCamel};
 import ${basePackage}.service.${modelNameUpperCamel}Service;
 import ${basePackage}.core.AbstractService;
 import org.springframework.stereotype.Service;
@@ -11,8 +11,10 @@ import javax.annotation.Resource;
 
 
 /**
- * Created by ${author} on ${date}.
- */
+* Class Description: xxx
+* @author ${author}
+* @date ${date}.
+*/
 @Service
 @Transactional
 public class ${modelNameUpperCamel}ServiceImpl extends AbstractService<${modelNameUpperCamel}> implements ${modelNameUpperCamel}Service {
